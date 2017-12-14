@@ -1,8 +1,33 @@
 # HashWithIndifferentAccessDuplicateWarning
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/hash_with_indifferent_access_duplicate_warning`. To experiment with that code, run `bin/console` for an interactive prompt.
+The ruby allow different value between string key and symbol key.
 
-TODO: Delete this and the text above, and describe your gem
+```
+{x: 21, 'x'=>42}
+=> {:x=>21, "x"=>42}
+```
+But, when we convert this hash to HashWithIndifferentAccess, we lost one side value.
+
+```
+ActiveSupport::HashWithIndifferentAccess.new({x: 21, 'x'=>42})
+=> {"x"=>42}
+```
+
+When we create duplicate key's hash, ruby warning message.
+
+```
+irb(main):010:0> {x: 21, 'x':42}
+(irb):10: warning: key :x is duplicated and overwritten on line 10
+=> {:x=>42}
+```
+
+This gem show warning message when HashWithIndifferentAccess overwritten a key.
+
+```
+ActiveSupport::HashWithIndifferentAccess.new({x: 21, 'x'=>42})
+warning: key :x and 'x' is duplicated and overwritten
+=> {"x"=>42}
+```
 
 ## Installation
 
@@ -22,7 +47,18 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+```
+require 'hash_with_indifferent_access_duplicate_warning'
+
+# set logger proc
+log_proc = proc { |msg| p msg }
+HashWithIndifferentAccessDuplicateWarning.register_write_error_log_func(log_proc)
+
+# create
+ActiveSupport::HashWithIndifferentAccess.new({x: 21, 'x'=>42})
+=> {"x"=>42}
+# output message like "warning: key :x and 'x' is duplicated and overwritten"
+```
 
 ## Development
 
